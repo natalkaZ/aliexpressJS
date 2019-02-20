@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
         confirm = document.querySelector('.confirm'),
         badge = document.querySelector('.nav__badge'),
         totalCost = document.querySelector('.cart__total > span'),
-        titles = document.querySelector('.goods__title');
+        titles = document.querySelectorAll('.goods__title');
 
     function openCart() {
         cart.style.display = 'block';
@@ -33,6 +33,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
             trigger.remove();
 
+            showConfirn();
+            calcGoods(1);
+
             removeBtn.classList.add('goods__item-remove');
             removeBtn.innerHTML = '&times';
             item.appendChild(removeBtn);
@@ -42,7 +45,96 @@ window.addEventListener('DOMContentLoaded', () => {
             if (empty) {
                 empty.remove();
             }
+
+            calcTotal();
+            removeFromCart();
         });
     });
+
+    function sliceTitle(){
+        titles.forEach(function(item) {
+            if(item.textContent.length < 70){
+                return;
+            } else {
+                const str = item.textContent.slice(0, 71) + '...';
+                item.textContent = str;
+            }
+        });
+    }
+
+    sliceTitle();    
+
+    function showConfirn(){
+        confirm.style.display = 'block';
+        let counter = 100;
+        const id = setInterval(frame, 10);
+
+        const cartCoords = open.getBoundingClientRect();
+        const confirmCoords = confirm.getBoundingClientRect();
+
+        let translateY = cartCoords.top;
+        let translateX = cartCoords.left;
+
+        let confirmTop = confirmCoords.top;
+        let confirmLeft = confirmCoords.left;
+
+        function frame(){
+            if(counter == 10) {
+                clearInterval(id);
+                confirm.style.display = 'none';
+                confirm.style.top = confirmTop + 'px';
+                confirm.style.left = confirmLeft + 'px'; 
+                confirm.style.transform = 'scale(1)';  
+                confirm.style.opacity = '1';      
+
+            } else {
+                counter --;
+                // confirm.style.transform = `translateY(-${counter}px)`;
+                confirm.style.opacity = '.' + counter;
+
+                confirm.style.top = translateY - 38 + 'px';
+                confirm.style.left = translateX - 20 + 'px';
+                confirm.style.transform = 'scale(.3)';
+                confirm.style.transition = 'all 1s';                
+            }
+        }
+    }
+
+    function calcGoods(i){
+        const items = cartWrapper.querySelectorAll('.goods__item');
+        badge.textContent = i + items.length;
+    }
+
+    function calcTotal(){
+        const prices = document.querySelectorAll('.cart__wrapper > .goods__item > .goods__price > span');
+        let total = 0;
+        
+        empty = document.createElement('div');
+        empty.innerHTML = 'Ваша корзина пока пуста';
+        empty.classList.add('empty');
+
+        prices.forEach(function(item){
+            total += +item.textContent;
+        });
+
+        totalCost.textContent = total;
+
+        if(total == 0) {
+            cartWrapper.appendChild(empty);
+        }
+
+    }
+
+    function removeFromCart(){
+        const removeBtn = cartWrapper.querySelectorAll('.goods__item-remove');
+
+        removeBtn.forEach(function(btn){
+            btn.addEventListener('click', () => {
+                btn.parentElement.remove();
+                calcGoods(0);
+                calcTotal();
+            });
+        });
+    }
 
 });
