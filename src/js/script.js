@@ -40,14 +40,15 @@ window.addEventListener('DOMContentLoaded', () => {
             removeBtn.innerHTML = '&times';
             item.appendChild(removeBtn);
 
-            cartWrapper.appendChild(item);
-
             if (empty) {
                 empty.remove();
             }
 
+            cartWrapper.appendChild(item);
+
             calcTotal();
             removeFromCart();
+
         });
     });
 
@@ -108,10 +109,6 @@ window.addEventListener('DOMContentLoaded', () => {
     function calcTotal(){
         const prices = document.querySelectorAll('.cart__wrapper > .goods__item > .goods__price > span');
         let total = 0;
-        
-        empty = document.createElement('div');
-        empty.innerHTML = 'Ваша корзина пока пуста';
-        empty.classList.add('empty');
 
         prices.forEach(function(item){
             total += +item.textContent;
@@ -119,8 +116,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
         totalCost.textContent = total;
 
+        empty = document.createElement('div');
+        empty.innerHTML = 'Ваша корзина пока пуста';
+        empty.classList.add('empty');
+
         if(total == 0) {
             cartWrapper.appendChild(empty);
+        } else {
+            empty.remove();
         }
 
     }
@@ -136,5 +139,4 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
 });
